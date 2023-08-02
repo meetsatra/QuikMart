@@ -1,9 +1,10 @@
+// https://github.com/meetsatra/QuikMart
 // https://www.youtube.com/watch?v=dbaAOsmZt5Q&list=PLzb46hGUzitBp584kLyn6l3i6yC-rXlmN&index=3&ab_channel=CourseOnDemand
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan'); // for logging all server requests. (get, post)
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); // admin admin
 
 // Middleware (for making this frontend understand what backend is sending as JSON object)
 app.use(bodyParser.json()); 
@@ -45,8 +46,13 @@ app.post(`${api}/products`,(req,res) =>{ // http://localhost:3000/api/v1/product
     res.send(newProd);
 })
 
-
-
+mongoose.connect(process.env.CONNECTION_STRING)
+.then(()=>{
+    console.log("Database Connected Successfully");
+})
+.catch((err)=>{
+    console.log(`Error: ` + err);
+})
 app.listen(PORT,()=>{ // for running the app on port 3000
     // console.log(api); // /api/v1
     console.log("Server is running on http://localhost:"+PORT);

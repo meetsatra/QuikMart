@@ -1,0 +1,8 @@
+1. Inside project, Created a cluster in mongo.
+2. Inside 'collections' section, You have databases (QuikMart).
+3. Inside databases, you have collections(tables).
+4. Create a user and password by clicking on 'Connect', then u will get a string URL.
+5. This url has username, password and database name in it. 
+6. Put this string in your app and use.
+7. If u hover on mongoose.connect('STRING_URL') in your app, it will show a promise message if it is succesful.
+8. 
