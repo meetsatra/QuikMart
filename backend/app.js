@@ -7,32 +7,41 @@ const morgan = require('morgan'); // for logging all server requests. (get, post
 const mongoose = require('mongoose'); // admin admin
 
 // Middleware (for making this frontend understand what backend is sending as JSON object)
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 app.use(morgan('tiny'));
+
+const productSchema = mongoose.Schema({
+    name: String,
+    image: String,
+    countInStock: {
+        type: Number,
+        required: true
+    }
+})
+
+const Product = mongoose.model('Product', productSchema);
 
 require('dotenv/config');
 const api = process.env.API_URL; // '/api/v1'
 
 PORT = 3000
 
-app.get(api + '/',(req,res) =>{ // this is a callback function which sends 
-    res.send("Hello API");      // response to client whenever it is called 
+app.get(api + '/', (req, res) => { // this is a callback function which sends
+    res.send("Hello API"); // response to client whenever it is called
 })
 // app.get(api + '/products',(req,res) =>{code}) //  for products page, etc
 
-app.get(`${api}/products`,(req,res) =>{ // http://localhost:3000/api/v1/products
-    const product = {
-        id: 1,
-        name: 'iPhone 14', // try to use single quotes
-        image: 'iphone14.jpg',
+app.get(`${api}/products`, async (req, res) => { // http://localhost:3000/api/v1/products
+    const productList = await Product.find();
+    if(!productList){
+        res.status(500).json({success:false})
     }
-    // res.send("PRODUCTS");
-    res.send(product);
+    res.send(productList);
 })
 
-app.post(`${api}/products`,(req,res) =>{ // http://localhost:3000/api/v1/products
+app.post(`${api}/products`, (req, res) => { // http://localhost:3000/api/v1/products
     // const product = {id: 1,name: 'iPhone 14', image: 'iphone14.jpg',} // instead of this, we use req.body
-    const newProd = req.body; // using postman, you test this post.
+    //     const newProd = req.body; // using postman, you test this post.
     /*
     Posting format:
     {
@@ -42,18 +51,32 @@ app.post(`${api}/products`,(req,res) =>{ // http://localhost:3000/api/v1/product
     }
     // double quotes everywhere
     */
-    console.log(newProd);
-    res.send(newProd);
+    //    console.log(newProd);
+
+    const product = new Product({
+        name: req.body.name,
+        image: req.body.image,
+        countInStock: req.body.countInStock
+    })
+    product.save().then((createdProduct => {
+        res.status(201).json(createdProduct)
+    })).catch((err) => {
+        res.status(500).json({
+            error: err,
+            success: false
+        })
+    })
+    // res.send(product);
 })
 
 mongoose.connect(process.env.CONNECTION_STRING)
-.then(()=>{
-    console.log("Database Connected Successfully");
-})
-.catch((err)=>{
-    console.log(`Error: ` + err);
-})
-app.listen(PORT,()=>{ // for running the app on port 3000
+    .then(() => {
+        console.log("Database Connected Successfully");
+    })
+    .catch((err) => {
+        console.log(`Error: ` + err);
+    })
+app.listen(PORT, () => { // for running the app on port 3000
     // console.log(api); // /api/v1
-    console.log("Server is running on http://localhost:"+PORT);
+    console.log("Server is running on http://localhost:" + PORT);
 })

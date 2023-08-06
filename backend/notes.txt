@@ -5,4 +5,11 @@
 5. This url has username, password and database name in it. 
 6. Put this string in your app and use.
 7. If u hover on mongoose.connect('STRING_URL') in your app, it will show a promise message if it is succesful.
-8. 
+
+################################################################################################################
+
+# READ & WRITE DATA IN DATABASE USING API
+
+1. Created a collection(table) inside the QuikMart database, named products.
+2. Defined schema in app.js
+3. created Product variable (model)
